@@ -1,0 +1,48 @@
+version: '2'
+services:
+  registry:
+    restart: always
+    image: registry:2.6.2
+    environment:
+      REGISTRY_HTTP_TLS_CERTIFICATE: /certs/live/${REGISTRY_DOMAIN}/fullchain.pem
+      REGISTRY_HTTP_TLS_KEY: /certs/live/${REGISTRY_DOMAIN}/privkey.pem
+    volumes:
+      - ${REGISTRY_DATA}:/var/lib/registry
+      - ${LETSENCRYPT_PATH}/:/certs
+    networks:
+      - registry-net
+
+
+  lets-nginx:
+    build: ./lets-nginx/
+    restart: always
+    volumes:
+      -  ${LETSENCRYPT_CACHE}:/cache
+      -  ${LETSENCRYPT_PATH}:/etc/letsencrypt
+      - ${HTACCESS_REGISTRY}:/etc/nginx/password_registry
+    links:
+      - registry
+    environment:
+      EMAIL: ${REGISTRY_EMAIL}
+      DOMAIN: ${REGISTRY_DOMAIN}
+      UPSTREAM: registry:5000
+    ports:
+      - ${HTTP_PORT}:80
+      - ${HTTPS_PORT}:443
+    networks:
+      - registry-net
+
+  registry-web:
+      image: hyper/docker-registry-web:v0.1.2
+      ports:
+        - ${REGWEB_HTTP_PORT}:8080
+      volumes:
+         - ${REGWEB_CONF}/registry-web:/conf:ro
+         - ${REGWEB_DB}:/data
+      depends_on:
+        - registry
+      networks:
+        - registry-net
+networks:
+  registry-net:
+

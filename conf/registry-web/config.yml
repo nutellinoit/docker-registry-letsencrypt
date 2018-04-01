@@ -1,0 +1,7 @@
+registry:
+   url: https://registry:5000/v2
+   name: registry
+   readonly: true
+   auth:
+   trust_any_ssl: true
+enabled: false
