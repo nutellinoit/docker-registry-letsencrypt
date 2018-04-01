@@ -34,3 +34,6 @@ Start registry with:
 docker-compose up -d
 ```
 
+### Demo install
+
+[![asciicast](https://asciinema.org/a/uc0hryvgHa2wWI4ZHlrAZIPhK.png)](https://asciinema.org/a/uc0hryvgHa2wWI4ZHlrAZIPhK)
